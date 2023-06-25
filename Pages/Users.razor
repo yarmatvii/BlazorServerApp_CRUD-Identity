@@ -1,0 +1,65 @@
+﻿@page "/users"
+@using FirstProject.Services;
+@using FirstProject.Models;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<User> UserManager;
+@inject ICRUDService<User> UserService;
+@inject IJSRuntime JSRuntime;
+<PageTitle>Users</PageTitle>
+<h3>Properties</h3>
+<div class="row">
+    <div class="text-center col-md-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>FirstName</th>
+                    <th>LastName</th>
+                    <th>UserName</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>PhoneNumber</th>
+                    <th>InitialPropertiesCost</th>
+                    <th>CurrentPropertiesCost</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.FirstName</td>
+                        <td>@user.LastName</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.Address</td>
+                        <td>@user.PhoneNumber</td>
+                        <td>@user.InitialPropertyCost</td>
+                        <td>@user.CurrentPropertyCost</td>
+                        <td>
+                            <a href="/user/update/@user.Id" class="btn btn-outline-dark">Edit</a>
+                            <button class="btn btn-outline-danger" @onclick="async () => await Delete(user)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@code {
+    private List<User> users = new();
+    private async Task Delete(User user)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {user.UserName}?");
+        if (confirmed)
+        {
+            await UserManager.DeleteAsync(user);
+            //PropertyService.Delete(user.Id);
+            users.Remove(user);
+        }
+    }
+    protected override void OnInitialized()
+    {
+        users = UserService.GetAll();
+        base.OnInitialized();
+    }
+}

@@ -1,0 +1,108 @@
+﻿@page "/property/add"
+@page "/property/update/{Id:int}"
+@using FirstProject.Data;
+@using FirstProject.Models;
+@using FirstProject.Services;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<User> UserManager;
+@inject ICRUDService<Property> PropertyService;
+@inject NavigationManager NavigationManager;
+<PageTitle>@Title</PageTitle>
+
+<h3>@Title</h3>
+@*<a href="/" class="btn btn-outline-dark">Show All</a>*@
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="@property" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label for="name">Name</label>
+                <InputText class="form-control" @bind-Value="property.Name"></InputText>
+                <ValidationMessage For="@(()=>property.Name)" />
+            </div>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <InputText class="form-control" @bind-Value="property.Type"></InputText>
+                <ValidationMessage For="@(()=>property.Type)" />
+            </div>
+            <div class="form-group">
+                <label for="PurchaseDate">PurchaseDate</label>
+                <input type="date" class="form-control" @bind="property.PurchaseDate"></input>
+                <ValidationMessage For="@(()=>property.PurchaseDate)" />
+            </div>
+            <div class="form-group">
+                <label for="InitialCost">InitialCost</label>
+                <InputNumber class="form-control" @bind-Value="property.InitialCost"></InputNumber>
+                <ValidationMessage For="@(()=>property.InitialCost)" />
+            </div>
+            <div class="form-group">
+                <label for="priceLossPeriod">Price Loss Period</label>
+                <InputSelect class="form-control" @bind-Value="property.priceLossPeriod">
+                    @foreach (var enumValue in Enum.GetValues(typeof(PriceLossPeriod)))
+                    {
+                        <option value="@enumValue">@enumValue</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(()=>property.priceLossPeriod)" />
+            </div>
+            <div class="form-group">
+                <label for="PriceLoss">PriceLoss</label>
+                <InputNumber class="form-control" @bind-Value="property.PriceLoss"></InputNumber>
+                <ValidationMessage For="@(()=>property.PriceLoss)" />
+            </div>
+            <div class="form-group">
+                <label for="owner">Owner</label>
+                <InputSelect class="form-control" @bind-Value="@property.OwnerId" required>
+                    <option value="">Select an owner</option>
+                    @foreach (var user in UserManager.Users.ToList())
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(()=>property.Owner)" />
+            </div>
+            <div class="my-2">
+                @message
+            </div>
+            <div class="my-2">
+                <button type="submit" class="btn btn-dark">Save</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string message = string.Empty;
+    Property property = new();
+    private string Title = "Add Property";
+
+    private void Save()
+    {
+        if (PropertyService.AddUpdate(property))
+        {
+            if (Id > 0)
+            {
+                message = "Property updated successfully";
+                NavigationManager.NavigateTo("/");
+            }
+            else
+                message = "Property added successfully";
+            property = new();
+        }
+        else
+        {
+            message = "Failed to add/update property";
+        }
+    }
+    protected override void OnInitialized()
+    {
+        if (Id > 0)
+        {
+            Title = "Update Property";
+            property = PropertyService.Get(Id);
+        }
+        base.OnInitialized();
+    }
+}

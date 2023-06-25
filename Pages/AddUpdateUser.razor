@@ -1,0 +1,102 @@
+﻿@page "/user/add"
+@page "/user/update/{Id}"
+@using FirstProject.Data;
+@using FirstProject.Models;
+@using FirstProject.Services;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<User> UserManager;
+@inject ICRUDService<User> UserService;
+@inject NavigationManager NavigationManager;
+<PageTitle>@Title</PageTitle>
+
+<h3>@Title</h3>
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="@user" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label for="Address">Address</label>
+                <InputText class="form-control" @bind-Value="user.Address"></InputText>
+                <ValidationMessage For="@(()=>user.Address)" />
+            </div>
+            <div class="form-group">
+                <label for="FirstName">FirstName</label>
+                <InputText class="form-control" @bind-Value="user.FirstName"></InputText>
+                <ValidationMessage For="@(()=>user.FirstName)" />
+            </div>
+            <div class="form-group">
+                <label for="LastName">LastName</label>
+                <InputText class="form-control" @bind-Value="user.LastName"></InputText>
+                <ValidationMessage For="@(()=>user.LastName)" />
+            </div>
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <InputText class="form-control" @bind-Value="user.Email" required></InputText>
+                <ValidationMessage For="@(()=>user.Email)" />
+            </div>
+            <div class="form-group">
+                <label for="UserName">UserName</label>
+                <InputText class="form-control" @bind-Value="user.UserName" required></InputText>
+                <ValidationMessage For="@(()=>user.UserName)" />
+            </div>
+            <div class="form-group">
+                <label for="PhoneNumber">PhoneNumber</label>
+                <InputText class="form-control" @bind-Value="user.PhoneNumber"></InputText>
+                <ValidationMessage For="@(()=>user.PhoneNumber)" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText class="form-control" @bind-Value="password" required></InputText>
+                <ValidationMessage For="@(()=>password)" />
+            </div>
+            <div class="my-2">
+                @message
+            </div>
+            <div class="my-2">
+                <button type="submit" class="btn btn-dark">Save</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private string message = string.Empty;
+    User user = new();
+    private string Title = "Add User";
+    private string password = string.Empty;
+    private void Save()
+    {
+        //UserManager.SetUserNameAsync(user, user.UserName);
+        //UserManager.SetEmailAsync(user, user.Email);
+        //UserManager.SetPhoneNumberAsync(user, user.PhoneNumber);
+        UserManager.AddPasswordAsync(user, password).Wait();
+        if (UserService.AddUpdate(user))
+        {
+            if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
+            {
+                message = "User updated successfully";
+                NavigationManager.NavigateTo("/users");
+            }
+            else
+                message = "User added successfully";
+            user = new();
+            password = string.Empty;
+        }
+        else
+        {
+            message = "Failed to add/update user";
+        }
+    }
+    protected override void OnInitialized()
+    {
+        if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
+        {
+            Title = "Update User";
+            //user = u;
+            user = UserManager.Users.FirstOrDefault(x => x.Id == Id);
+        }
+        base.OnInitializedAsync();
+    }
+}
