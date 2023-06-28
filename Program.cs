@@ -21,7 +21,6 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<ICRUDService<Property>, PropertyService>();
 builder.Services.AddScoped<ICRUDService<User>, UserService>();
 

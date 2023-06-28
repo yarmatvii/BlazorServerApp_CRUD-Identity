@@ -6,28 +6,35 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FirstProject.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class PropertyConfiguration : Migration
+    public partial class FinalState : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CurrentPropertyCost",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "InitialPropertyCost",
-                table: "AspNetUsers");
-
-            migrationBuilder.AlterColumn<string>(
+            migrationBuilder.AddColumn<string>(
                 name: "Address",
                 table: "AspNetUsers",
                 type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(100)",
-                oldMaxLength: 100,
-                oldNullable: true);
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Discriminator",
+                table: "AspNetUsers",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<string>(
+                name: "FirstName",
+                table: "AspNetUsers",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "LastName",
+                table: "AspNetUsers",
+                type: "nvarchar(max)",
+                nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "Properties",
@@ -36,7 +43,7 @@ namespace FirstProject.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     InitialCost = table.Column<float>(type: "real", nullable: false),
@@ -50,7 +57,8 @@ namespace FirstProject.Data.Migrations
                         name: "FK_Properties_AspNetUsers_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -65,27 +73,21 @@ namespace FirstProject.Data.Migrations
             migrationBuilder.DropTable(
                 name: "Properties");
 
-            migrationBuilder.AlterColumn<string>(
+            migrationBuilder.DropColumn(
                 name: "Address",
-                table: "AspNetUsers",
-                type: "nvarchar(100)",
-                maxLength: 100,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
+                table: "AspNetUsers");
 
-            migrationBuilder.AddColumn<decimal>(
-                name: "CurrentPropertyCost",
-                table: "AspNetUsers",
-                type: "decimal(18,2)",
-                nullable: true);
+            migrationBuilder.DropColumn(
+                name: "Discriminator",
+                table: "AspNetUsers");
 
-            migrationBuilder.AddColumn<decimal>(
-                name: "InitialPropertyCost",
-                table: "AspNetUsers",
-                type: "decimal(18,2)",
-                nullable: true);
+            migrationBuilder.DropColumn(
+                name: "FirstName",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "LastName",
+                table: "AspNetUsers");
         }
     }
 }
