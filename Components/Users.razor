@@ -1,7 +1,4 @@
 ﻿@page "/users"
-@using FirstProject.Services;
-@using FirstProject.Models;
-@using Microsoft.AspNetCore.Identity;
 @inject UserManager<User> UserManager;
 @inject ICRUDService<User> UserService;
 @inject IJSRuntime JSRuntime;
@@ -45,21 +42,3 @@
         </table>
     </div>
 </div>
-@code {
-    private List<User> users = new();
-    private async Task Delete(User user)
-    {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {user.UserName}?");
-        if (confirmed)
-        {
-            await UserManager.DeleteAsync(user);
-            //PropertyService.Delete(user.Id);
-            users.Remove(user);
-        }
-    }
-    protected override void OnInitialized()
-    {
-        users = UserService.GetAll();
-        base.OnInitialized();
-    }
-}

@@ -1,6 +1,4 @@
 ﻿@page "/"
-@using FirstProject.Services;
-@using FirstProject.Models;
 @inject ICRUDService<Property> PropertyService;
 @inject IJSRuntime JSRuntime;
 <PageTitle>Properties</PageTitle>
@@ -43,20 +41,3 @@
         </table>
     </div>
 </div>
-@code {
-    private List<Property> properties = new();
-    private async Task Delete(Property property)
-    {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {property.Name}?");
-        if (confirmed)
-        {
-            PropertyService.Delete(property.Id);
-            properties.Remove(property);
-        }
-    }
-    protected override void OnInitialized()
-    {
-        properties = PropertyService.GetAll();
-        base.OnInitialized();
-    }
-}
