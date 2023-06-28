@@ -103,8 +103,8 @@ namespace FirstProject.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirm _password")]
+            [Compare("Password", ErrorMessage = "The _password and confirmation _password do not match.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -132,7 +132,7 @@ namespace FirstProject.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("User created a new account with _password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -184,7 +184,7 @@ namespace FirstProject.Areas.Identity.Pages.Account
         {
             if (!_userManager.SupportsUserEmail)
             {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
+                throw new NotSupportedException("The default UI requires a _user store with email support.");
             }
             return (IUserEmailStore<User>)_userStore;
         }

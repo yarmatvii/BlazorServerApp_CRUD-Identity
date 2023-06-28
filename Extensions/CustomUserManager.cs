@@ -6,13 +6,15 @@ namespace FirstProject.Extensions
 {
     public class CustomUserManager : UserManager<User>
     {
+        private readonly ILogger<CustomUserManager> _logger;
         public CustomUserManager(IUserStore<User> store, IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<User> passwordHasher, IEnumerable<IUserValidator<User>> userValidators,
             IEnumerable<IPasswordValidator<User>> passwordValidators, ILookupNormalizer keyNormalizer,
-            IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<User>> logger)
+            IdentityErrorDescriber errors, IServiceProvider services, ILogger<CustomUserManager> logger)
             : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer,
                   errors, services, logger)
         {
+            _logger = logger;
         }
 
         public override async Task<IdentityResult> CreateAsync(User user)
@@ -20,7 +22,7 @@ namespace FirstProject.Extensions
             try
             {
                 IdentityResult result;
-                // Perform any additional operations before calling the base CreateAsync, if needed
+                // Perform any additional operations before calling the base CreateAsync, if needed.
                 user.NormalizedEmail = NormalizeEmail(user.Email);
                 user.NormalizedUserName = NormalizeName(user.UserName);
                 if (Users.FirstOrDefault(x => x.Id == user.Id) == null)
@@ -31,14 +33,13 @@ namespace FirstProject.Extensions
                 {
                     result = await base.UpdateAsync(user);
                 }
-                //var result = await base.CreateAsync(user);
                 return result;
             }
             catch (Exception ex)
             {
-                // Handle the exception, log the error, or perform any necessary error handling
-                Console.WriteLine($"Error creating or updating user: {ex.Message}");
-                return IdentityResult.Failed(new IdentityError { Description = "User creation failed" });
+                // Handle the exception, log the error, or perform any necessary error handling.
+                _logger.LogError($"Error creating or updating _user: {ex.Message}");
+                return IdentityResult.Failed(new IdentityError { Description = "Failed to create/update user" });
             }
         }
     }

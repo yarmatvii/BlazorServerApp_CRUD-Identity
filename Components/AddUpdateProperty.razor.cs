@@ -1,54 +1,55 @@
-﻿using FirstProject.Models;
+﻿using FirstProject.Extensions;
+using FirstProject.Models;
 using FirstProject.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace FirstProject.Components
 {
     public partial class AddUpdateProperty
     {
-        //private UserManager<User> _userManager;
-        //private ICRUDService<Property> _propertyService;
-        //private NavigationManager _navigationManager;
-        //public AddUpdateProperty(UserManager<User> userManager, ICRUDService<Property> propertyService, NavigationManager navigationManager)
-        //{
-        //    _userManager = userManager;
-        //    _propertyService = propertyService;
-        //    _navigationManager = navigationManager;
-        //}
+        private string _title = "Add Property";
+        private string _message = string.Empty;
+        private List<User> _users = new();
+        Property _property = new();
+        [Inject]
+        private ICRUDService<Property> PropertyService { get; set; } = null!;
+        [Inject]
+        private NavigationManager NavigationManager { get; set; } = null!;
+        [Inject]
+        private CustomUserManager UserManager { get; set; } = null!;
         [Parameter]
         public int Id { get; set; }
-        private string message = string.Empty;
-        Property property = new();
-        private string Title = "Add Property";
 
-        private void Save()
+        private async Task SaveAsync()
         {
-            if (PropertyService.AddUpdate(property))
+            if (await PropertyService.AddUpdateAsync(_property))
             {
                 if (Id > 0)
                 {
-                    message = "Property updated successfully";
+                    _message = "Property updated successfully";
                     NavigationManager.NavigateTo("/");
                 }
                 else
-                    message = "Property added successfully";
-                property = new();
+                    _message = "Property added successfully";
+                _property = new();
             }
             else
             {
-                message = "Failed to add/update property";
+                _message = "Failed to add/update property";
             }
         }
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             if (Id > 0)
             {
-                Title = "Update Property";
-                property = PropertyService.Get(Id);
+                _title = "Update Property";
+                _property = await PropertyService.GetAsync(Id);
             }
-            base.OnInitialized();
+            _users = await UserManager.Users.ToListAsync();
+            await base.OnInitializedAsync();
         }
     }
 }

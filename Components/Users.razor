@@ -1,6 +1,4 @@
 ﻿@page "/users"
-@inject UserManager<User> UserManager;
-@inject IJSRuntime JSRuntime;
 <PageTitle>Users</PageTitle>
 <h3>Properties</h3>
 <div class="row">
@@ -20,7 +18,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in users)
+                @foreach (var user in _users)
                 {
                     <tr>
                         <td>@user.FirstName</td>
@@ -33,7 +31,7 @@
                         <td>@user.CurrentPropertyCost</td>
                         <td>
                             <a href="/user/update/@user.Id" class="btn btn-outline-dark">Edit</a>
-                            <button class="btn btn-outline-danger" @onclick="async () => await Delete(user)">Delete</button>
+                            <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(user)">Delete</button>
                         </td>
                     </tr>
                 }

@@ -1,63 +1,60 @@
 ﻿@page "/property/add"
 @page "/property/update/{Id:int}"
-@inject UserManager<User> UserManager;
-@inject ICRUDService<Property> PropertyService;
-@inject NavigationManager NavigationManager;
-<PageTitle>@Title</PageTitle>
+<PageTitle>@_title</PageTitle>
 
-<h3>@Title</h3>
+<h3>@_title</h3>
 <div class="row">
     <div class="col-md-6">
-        <EditForm Model="@property" OnValidSubmit="Save">
+        <EditForm Model="@_property" OnValidSubmit="SaveAsync">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label for="name">Name</label>
-                <InputText class="form-control" @bind-Value="property.Name"></InputText>
-                <ValidationMessage For="@(()=>property.Name)" />
+                <InputText class="form-control" @bind-Value="_property.Name"></InputText>
+                <ValidationMessage For="@(()=>_property.Name)" />
             </div>
             <div class="form-group">
                 <label for="type">Type</label>
-                <InputText class="form-control" @bind-Value="property.Type"></InputText>
-                <ValidationMessage For="@(()=>property.Type)" />
+                <InputText class="form-control" @bind-Value="_property.Type"></InputText>
+                <ValidationMessage For="@(()=>_property.Type)" />
             </div>
             <div class="form-group">
                 <label for="PurchaseDate">PurchaseDate</label>
-                <input type="date" class="form-control" @bind="property.PurchaseDate"></input>
-                <ValidationMessage For="@(()=>property.PurchaseDate)" />
+                <input type="date" class="form-control" @bind="_property.PurchaseDate"></input>
+                <ValidationMessage For="@(()=>_property.PurchaseDate)" />
             </div>
             <div class="form-group">
                 <label for="InitialCost">InitialCost</label>
-                <InputNumber class="form-control" @bind-Value="property.InitialCost"></InputNumber>
-                <ValidationMessage For="@(()=>property.InitialCost)" />
+                <InputNumber class="form-control" @bind-Value="_property.InitialCost"></InputNumber>
+                <ValidationMessage For="@(()=>_property.InitialCost)" />
             </div>
             <div class="form-group">
                 <label for="priceLossPeriod">Price Loss Period</label>
-                <InputSelect class="form-control" @bind-Value="property.priceLossPeriod">
+                <InputSelect class="form-control" @bind-Value="_property.priceLossPeriod">
                     @foreach (var enumValue in Enum.GetValues(typeof(PriceLossPeriod)))
                     {
                         <option value="@enumValue">@enumValue</option>
                     }
                 </InputSelect>
-                <ValidationMessage For="@(()=>property.priceLossPeriod)" />
+                <ValidationMessage For="@(()=>_property.priceLossPeriod)" />
             </div>
             <div class="form-group">
                 <label for="PriceLoss">PriceLoss</label>
-                <InputNumber class="form-control" @bind-Value="property.PriceLoss"></InputNumber>
-                <ValidationMessage For="@(()=>property.PriceLoss)" />
+                <InputNumber class="form-control" @bind-Value="_property.PriceLoss"></InputNumber>
+                <ValidationMessage For="@(()=>_property.PriceLoss)" />
             </div>
             <div class="form-group">
                 <label for="owner">Owner</label>
-                <InputSelect class="form-control" @bind-Value="@property.OwnerId" required>
+                <InputSelect class="form-control" @bind-Value="@_property.OwnerId" required>
                     <option value="">Select an owner</option>
-                    @foreach (var user in UserManager.Users.ToList())
+                    @foreach (var user in _users)
                     {
                         <option value="@user.Id">@user.UserName</option>
                     }
                 </InputSelect>
-                <ValidationMessage For="@(()=>property.Owner)" />
+                <ValidationMessage For="@(()=>_property.Owner)" />
             </div>
             <div class="my-2">
-                @message
+                @_message
             </div>
             <div class="my-2">
                 <button type="submit" class="btn btn-dark">Save</button>

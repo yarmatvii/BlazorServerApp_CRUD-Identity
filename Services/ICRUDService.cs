@@ -4,9 +4,9 @@ namespace FirstProject.Services
 {
     public interface ICRUDService<T>
     {
-        bool AddUpdate(T t);
-        bool Delete(int id);
-        T? Get(int id);
-        List<T> GetAll();
+        Task<bool> AddUpdateAsync(T t);
+        Task<bool> DeleteAsync(int id);
+        Task<T?> GetAsync(int id);
+        Task<List<T>> GetAllAsync();
     }
 }

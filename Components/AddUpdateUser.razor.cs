@@ -10,58 +10,55 @@ namespace FirstProject.Components
 {
     public partial class AddUpdateUser
     {
-        //private UserManager<User> _userManager;
-        //private ICRUDService<User> _userService;
-        //private NavigationManager _navigationManager;
-        //public AddUpdateUser(UserManager<User> userManager, ICRUDService<User> userService, NavigationManager navigationManager)
-        //{
-        //    _userManager = userManager;
-        //    _userService = userService;
-        //    _navigationManager = navigationManager;
-        //}
+        private string _title = "Add User";
+        private string _message = string.Empty;
+        private bool _isUpdating;
+        private string _password = string.Empty;
+        private User _user = new();
+        [Inject]
+        private CustomUserManager UserManager { get; set; } = null!;
+        [Inject]
+        private NavigationManager NavigationManager { get; set; } = null!;
         [Parameter]
-        public string Id { get; set; }
-        private string message = string.Empty;
-        User user = new();
-        private string Title = "Add User";
-        private string password = string.Empty;
-        private async void Save()
+        public string Id { get; set; } = null!;
+
+        private async Task SaveAsync()
         {
-            if (password.Trim() != string.Empty)
-                await UserManager.AddPasswordAsync(user, password);
-            var result = await UserManager.CreateAsync(user);
+            if (_password.Trim() != string.Empty)
+            {
+                await UserManager.AddPasswordAsync(_user, _password);
+            }
+            var result = await UserManager.CreateAsync(_user);
             if (result.Succeeded)
             {
-                if (IfUpdating())
+                if (await IsUpdating())
                 {
-                    message = "User updated successfully";
+                    _message = "User updated successfully";
                     NavigationManager.NavigateTo("/users");
                 }
                 else
-                    message = "User added successfully";
-                user = new();
-                password = string.Empty;
+                    _message = "User added successfully";
+                _user = new();
+                _password = string.Empty;
             }
             else
             {
-                message = "Failed to add/update user";
+                _message = "Failed to add/update user";
             }
+        }
+        private async Task<bool> IsUpdating()
+        {
+            return await UserManager.Users.FirstOrDefaultAsync(x => x.Id == Id) != null;
         }
         protected override async Task OnInitializedAsync()
         {
-            if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
+            _isUpdating = await IsUpdating();
+            if (await IsUpdating())
             {
-                Title = "Update User";
-                user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id == Id);
+                _title = "Update User";
+                _user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id == Id);
             }
             await base.OnInitializedAsync();
-        }
-        public bool IfUpdating()
-        {
-            if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
-                return true;
-            else
-                return false;
         }
     }
 }

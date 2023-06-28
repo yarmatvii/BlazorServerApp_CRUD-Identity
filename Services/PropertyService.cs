@@ -1,59 +1,75 @@
 ﻿using FirstProject.Data;
 using FirstProject.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace FirstProject.Services
 {
     public class PropertyService : ICRUDService<Property>
     {
         private readonly ApplicationDbContext _context;
-        public PropertyService(ApplicationDbContext context)
+        private readonly ILogger<PropertyService> _logger;
+        public PropertyService(ApplicationDbContext context, ILogger<PropertyService> logger)
         {
             _context = context;
+            _logger = logger;
         }
-        public bool AddUpdate(Property property)
+        public async Task<bool> AddUpdateAsync(Property property)
         {
             try
             {
                 if (property.Id == 0)
-                    _context.Properties.Add(property);
+                {
+                    await _context.Properties.AddAsync(property);
+                }
                 else
+                {
                     _context.Properties.Update(property);
-                _context.SaveChanges();
+                }
+                await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                _logger.LogError("An error occurred while adding/updating property", ex.Message);
                 return false;
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
-                var property = Get(id);
+                var property = await GetAsync(id);
                 if (property == null)
                     return false;
                 _context.Properties.Remove(property);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception e)
+            catch (DbException ex)
             {
+                // Log the database exception with a specific message.
+                _logger.LogError(ex.Message, "Error occurred while deleting property with ID {Id}", id);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Log the general exception with a generic message.
+                _logger.LogError(ex.Message, "An error occurred while deleting property with ID {Id}", id);
                 return false;
             }
         }
 
-        public Property? Get(int id)
+        public async Task<Property?> GetAsync(int id)
         {
-            return _context.Properties.Find(id);
+            return await _context.Properties.FindAsync(id);
 
         }
 
-        public List<Property> GetAll()
+        public async Task<List<Property>> GetAllAsync()
         {
-            return _context.Properties.Include(x => x.Owner).ToList();
+            return await _context.Properties.Include(x => x.Owner).ToListAsync();
         }
     }
 }

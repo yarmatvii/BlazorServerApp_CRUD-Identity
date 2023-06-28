@@ -28,7 +28,7 @@ namespace FirstProject.Areas.Identity
 		protected override async Task<bool> ValidateAuthenticationStateAsync(
 			AuthenticationState authenticationState, CancellationToken cancellationToken)
 		{
-			// Get the user manager from a new scope to ensure it fetches fresh data
+			// GetAsync the _user manager from a new scope to ensure it fetches fresh data.
 			var scope = _scopeFactory.CreateScope();
 			try
 			{

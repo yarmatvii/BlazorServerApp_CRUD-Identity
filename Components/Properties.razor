@@ -1,6 +1,4 @@
 ﻿@page "/"
-@inject ICRUDService<Property> PropertyService;
-@inject IJSRuntime JSRuntime;
 <PageTitle>Properties</PageTitle>
 <h3>Properties</h3>
 <div class="row">
@@ -20,12 +18,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var property in properties)
+                @foreach (var property in _properties)
                 {
                     <tr>
                         <td>@property.Name</td>
                         <td>@property.Type</td>
-                        <td>@property.PurchaseDate</td>
+                        <td>@property.PurchaseDate.ToString("dd.MM.yyyy")</td>
                         <td>@property.InitialCost</td>
                         <td>@property.priceLossPeriod</td>
                         <td>@property.PriceLoss</td>
@@ -33,7 +31,7 @@
                         <td>@property.CurrentCost</td>
                         <td>
                             <a href="/property/update/@property.Id" class="btn btn-outline-dark">Edit</a>
-                            <button class="btn btn-outline-danger" @onclick="async () => await Delete(property)">Delete</button>
+                            <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(property)">Delete</button>
                         </td>
                     </tr>
                 }
