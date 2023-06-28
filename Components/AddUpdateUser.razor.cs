@@ -1,7 +1,9 @@
-﻿using FirstProject.Models;
+﻿using FirstProject.Extensions;
+using FirstProject.Models;
 using FirstProject.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace FirstProject.Components
@@ -23,12 +25,14 @@ namespace FirstProject.Components
         User user = new();
         private string Title = "Add User";
         private string password = string.Empty;
-        private void Save()
+        private async void Save()
         {
-            UserManager.AddPasswordAsync(user, password).Wait();
-            if (AddUpdate(user))
+            if (password.Trim() != string.Empty)
+                await UserManager.AddPasswordAsync(user, password);
+            var result = await UserManager.CreateAsync(user);
+            if (result.Succeeded)
             {
-                if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
+                if (IfUpdating())
                 {
                     message = "User updated successfully";
                     NavigationManager.NavigateTo("/users");
@@ -43,38 +47,21 @@ namespace FirstProject.Components
                 message = "Failed to add/update user";
             }
         }
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
             {
                 Title = "Update User";
-                //user = u;
-                user = UserManager.Users.FirstOrDefault(x => x.Id == Id);
+                user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id == Id);
             }
-            base.OnInitializedAsync();
+            await base.OnInitializedAsync();
         }
-
-        public bool AddUpdate(User user)
+        public bool IfUpdating()
         {
-            try
-            {
-                user.NormalizedEmail = UserManager.NormalizeEmail(user.Email);
-                user.NormalizedUserName = UserManager.NormalizeName(user.UserName);
-
-                if (UserManager.Users.FirstOrDefault(x => x.Id == user.Id) == null)
-                {
-                    UserManager.CreateAsync(user).Wait();
-                }
-                else
-                {
-                    UserManager.UpdateAsync(user).Wait();
-                }
+            if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
                 return true;
-            }
-            catch (Exception e)
-            {
+            else
                 return false;
-            }
         }
     }
 }

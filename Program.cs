@@ -1,5 +1,6 @@
 using FirstProject.Areas.Identity;
 using FirstProject.Data;
+using FirstProject.Extensions;
 using FirstProject.Models;
 using FirstProject.Services;
 using Microsoft.AspNetCore.Components;
@@ -12,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Logging.AddConfiguration(
+    builder.Configuration.GetSection("Logging"));
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -21,6 +24,7 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
+builder.Services.AddScoped<CustomUserManager>();
 builder.Services.AddScoped<ICRUDService<Property>, PropertyService>();
 
 var app = builder.Build();

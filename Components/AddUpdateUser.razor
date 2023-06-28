@@ -1,6 +1,6 @@
 ﻿@page "/user/add"
 @page "/user/update/{Id}"
-@inject UserManager<User> UserManager;
+@inject CustomUserManager UserManager;
 @inject NavigationManager NavigationManager;
 <PageTitle>@Title</PageTitle>
 
@@ -39,11 +39,14 @@
                 <InputText class="form-control" @bind-Value="user.PhoneNumber"></InputText>
                 <ValidationMessage For="@(()=>user.PhoneNumber)" />
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <InputText class="form-control" @bind-Value="password" required></InputText>
-                <ValidationMessage For="@(()=>password)" />
-            </div>
+            @if (!IfUpdating())
+            {
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <InputText class="form-control" @bind-Value="password"></InputText>
+                    <ValidationMessage For="@(()=>password)" />
+                </div>
+            }
             <div class="my-2">
                 @message
             </div>
