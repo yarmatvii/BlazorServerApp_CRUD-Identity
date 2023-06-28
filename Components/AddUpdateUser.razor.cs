@@ -26,7 +26,7 @@ namespace FirstProject.Components
         private void Save()
         {
             UserManager.AddPasswordAsync(user, password).Wait();
-            if (UserService.AddUpdate(user))
+            if (AddUpdate(user))
             {
                 if (UserManager.Users.FirstOrDefault(x => x.Id == Id) != null)
                 {
@@ -52,6 +52,29 @@ namespace FirstProject.Components
                 user = UserManager.Users.FirstOrDefault(x => x.Id == Id);
             }
             base.OnInitializedAsync();
+        }
+
+        public bool AddUpdate(User user)
+        {
+            try
+            {
+                user.NormalizedEmail = UserManager.NormalizeEmail(user.Email);
+                user.NormalizedUserName = UserManager.NormalizeName(user.UserName);
+
+                if (UserManager.Users.FirstOrDefault(x => x.Id == user.Id) == null)
+                {
+                    UserManager.CreateAsync(user).Wait();
+                }
+                else
+                {
+                    UserManager.UpdateAsync(user).Wait();
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }
