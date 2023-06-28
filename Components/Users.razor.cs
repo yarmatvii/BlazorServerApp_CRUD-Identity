@@ -28,7 +28,6 @@ namespace FirstProject.Components
         }
         protected override void OnInitialized()
         {
-            //users = _userService.GetAll();
             users = UserManager.Users.ToList();
             base.OnInitialized();
         }
