@@ -15,7 +15,7 @@
                     <th>PriceLoss</th>
                     <th>Owner</th>
                     <th>CurrentCost</th>
-                    <AuthorizeView>
+                    <AuthorizeView Roles="Admin">
                         <th>Action</th>
                     </AuthorizeView>
                 </tr>
@@ -32,7 +32,7 @@
                         <td>@property.PriceLoss</td>
                         <td>@property.Owner.UserName</td>
                         <td>@property.CurrentCost</td>
-                        <AuthorizeView>
+                        <AuthorizeView Roles="Admin">
                             <td>
                                 <a href="/property/update/@property.Id" class="btn btn-outline-dark">Edit</a>
                                 <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(property)">Delete</button>

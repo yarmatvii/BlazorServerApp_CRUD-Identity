@@ -1,7 +1,7 @@
 ﻿@page "/property/add"
 @page "/property/update/{Id:int}"
 @inherits AddUpdatePropertyComponent
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 <PageTitle>@Title</PageTitle>
 
 <h3>@Title</h3>

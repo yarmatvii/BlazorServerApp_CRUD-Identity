@@ -1,7 +1,7 @@
 ﻿@page "/users"
 @inherits UsersComponent
 <PageTitle>Users</PageTitle>
-<h3>Properties</h3>
+<h3>Users</h3>
 <div class="row">
     <div class="text-center col-md-12">
         <table class="table table-striped">
@@ -15,7 +15,8 @@
                     <th>PhoneNumber</th>
                     <th>InitialPropertiesCost</th>
                     <th>CurrentPropertiesCost</th>
-                    <AuthorizeView>
+                    <th>Role</th>
+                    <AuthorizeView Roles="Admin">
                         <th>Action</th>
                     </AuthorizeView>
                 </tr>
@@ -32,7 +33,8 @@
                         <td>@user.PhoneNumber</td>
                         <td>@user.InitialPropertyCost</td>
                         <td>@user.CurrentPropertyCost</td>
-                        <AuthorizeView>
+                        <td>@_userRoles[user.Id]</td>
+                        <AuthorizeView Roles="Admin">
                             <td>
                                 <a href="/user/update/@user.Id" class="btn btn-outline-dark">Edit</a>
                                 <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(user)">Delete</button>

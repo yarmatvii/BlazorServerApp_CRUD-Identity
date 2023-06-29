@@ -5,20 +5,25 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
+using System.Data;
 
 namespace FirstProject.Components
 {
     public class AddUpdateUserComponent : ComponentBase
     {
         [Inject]
-        private CustomUserManager UserManager { get; set; } = null!;
+        private CustomUserManager _userManager { get; set; } = null!;
         [Inject]
-        private NavigationManager NavigationManager { get; set; } = null!;
+        private NavigationManager _navigationManager { get; set; } = null!;
+        [Inject]
+        private RoleManager<IdentityRole> _roleManager { get; set; } = null!;
         protected string Password = string.Empty;
+        protected string SelectedRoleName { get; set; }
         protected bool IsUpdating;
         protected string Title = "Add User";
         protected string Message = string.Empty;
         protected User User { get; private set; } = new();
+        protected List<IdentityRole> Roles { get; private set; } = new();
         [Parameter]
         public string Id { get; set; } = null!;
 
@@ -26,15 +31,21 @@ namespace FirstProject.Components
         {
             if (!await CheckIsUpdating() && Password.Trim() != string.Empty)
             {
-                await UserManager.AddPasswordAsync(User, Password);
+                await _userManager.AddPasswordAsync(User, Password);
             }
-            var result = await UserManager.CreateAsync(User);
+            if (await CheckIsUpdating())
+            {
+                await _userManager.RemoveFromRolesAsync(User, await _userManager.GetRolesAsync(User));
+            }
+
+            var result = await _userManager.CreateAsync(User);
+            await _userManager.AddToRoleAsync(User, SelectedRoleName);
             if (result.Succeeded)
             {
                 if (await CheckIsUpdating())
                 {
                     Message = "User updated successfully";
-                    NavigationManager.NavigateTo("/users");
+                    _navigationManager.NavigateTo("/users");
                 }
                 else
                 {
@@ -50,7 +61,7 @@ namespace FirstProject.Components
         }
         private async Task<bool> CheckIsUpdating()
         {
-            return await UserManager.Users.FirstOrDefaultAsync(x => x.Id == Id) != null;
+            return await _userManager.Users.FirstOrDefaultAsync(x => x.Id == Id) != null;
         }
         protected override async Task OnInitializedAsync()
         {
@@ -58,8 +69,10 @@ namespace FirstProject.Components
             if (await CheckIsUpdating())
             {
                 Title = "Update User";
-                User = await UserManager.Users.FirstOrDefaultAsync(x => x.Id == Id);
+                User = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == Id);
             }
+
+            Roles = await _roleManager.Roles.ToListAsync();
             await base.OnInitializedAsync();
         }
     }

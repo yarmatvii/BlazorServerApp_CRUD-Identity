@@ -11,13 +11,13 @@ namespace FirstProject.Components
     public class AddUpdatePropertyComponent : ComponentBase
     {
         [Inject]
-        private ICRUDService<Property> PropertyService { get; set; } = null!;
+        private ICRUDService<Property> _propertyService { get; set; } = null!;
         [Inject]
-        private NavigationManager NavigationManager { get; set; } = null!;
+        private NavigationManager _navigationManager { get; set; } = null!;
         [Inject]
-        private CustomUserManager UserManager { get; set; } = null!;
+        private CustomUserManager _userManager { get; set; } = null!;
         [Inject]
-        private IJSRuntime JSRuntime { get; set; } = null!;
+        private IJSRuntime _jsRuntime { get; set; } = null!;
         protected string Title = "Add Property";
         protected string Message = string.Empty;
         protected List<User> Users { get; private set; } = new();
@@ -29,11 +29,11 @@ namespace FirstProject.Components
         {
             try
             {
-                await PropertyService.AddUpdateAsync(Property);
+                await _propertyService.AddUpdateAsync(Property);
                 if (Id > 0)
                 {
                     Message = "Property updated successfully";
-                    NavigationManager.NavigateTo("/");
+                    _navigationManager.NavigateTo("/");
                 }
                 else
                     Message = "Property added successfully";
@@ -51,15 +51,16 @@ namespace FirstProject.Components
                 if (Id > 0)
                 {
                     Title = "Update Property";
-                    Property = await PropertyService.GetAsync(Id);
+                    Property = await _propertyService.GetAsync(Id);
                 }
             }
             catch
             {
-                await JSRuntime.InvokeAsync<object>("alert", "Property does not exist.");
-                NavigationManager.NavigateTo("/property/add");
+                await _jsRuntime.InvokeAsync<object>("alert", "Property does not exist.");
+                _navigationManager.NavigateTo("/property/add");
             }
-            Users = await UserManager.Users.ToListAsync();
+
+            Users = await _userManager.Users.ToListAsync();
             await base.OnInitializedAsync();
         }
     }
