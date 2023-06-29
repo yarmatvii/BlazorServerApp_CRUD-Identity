@@ -8,26 +8,34 @@ using Microsoft.JSInterop;
 
 namespace FirstProject.Components
 {
-    public partial class Users
+    public class UsersComponent : ComponentBase
     {
-        private List<User> _users = new();
         [Inject]
         private CustomUserManager UserManager { get; set; } = null!;
         [Inject]
         private IJSRuntime JSRuntime { get; set; } = null!;
+        protected List<User> Users { get; private set; } = new();
 
-        private async Task DeleteAsync(User user)
+        protected async Task DeleteAsync(User user)
         {
             bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {user.UserName}?");
             if (confirmed)
             {
-                await UserManager.DeleteAsync(user);
-                _users.Remove(user);
+                try
+                {
+                    await UserManager.DeleteAsync(user);
+                }
+                catch (Exception ex)
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", ex.Message);
+                    return;
+                }
+                Users.Remove(user);
             }
         }
         protected override async Task OnInitializedAsync()
         {
-            _users = await UserManager.Users.ToListAsync();
+            Users = await UserManager.Users.ToListAsync();
             await base.OnInitializedAsync();
         }
     }

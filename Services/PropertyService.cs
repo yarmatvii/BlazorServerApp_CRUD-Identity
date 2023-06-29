@@ -14,7 +14,7 @@ namespace FirstProject.Services
             _context = context;
             _logger = logger;
         }
-        public async Task<bool> AddUpdateAsync(Property property)
+        public async Task<Property> AddUpdateAsync(Property property)
         {
             try
             {
@@ -24,47 +24,52 @@ namespace FirstProject.Services
                 }
                 else
                 {
+                    await GetAsync(property.Id);
                     _context.Properties.Update(property);
                 }
                 await _context.SaveChangesAsync();
-                return true;
+                return property;
             }
             catch (Exception ex)
             {
                 _logger.LogError("An error occurred while adding/updating property", ex.Message);
-                return false;
+                throw;
             }
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<Property> DeleteAsync(int id)
         {
             try
             {
                 var property = await GetAsync(id);
-                if (property == null)
-                    return false;
                 _context.Properties.Remove(property);
                 await _context.SaveChangesAsync();
-                return true;
+                return property;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Log the invalid operation exception with a specific message.
+                _logger.LogError(ex.Message, "Property with ID {Id} not found", id);
+                throw;
             }
             catch (DbException ex)
             {
                 // Log the database exception with a specific message.
                 _logger.LogError(ex.Message, "Error occurred while deleting property with ID {Id}", id);
-                return false;
+                throw;
             }
             catch (Exception ex)
             {
                 // Log the general exception with a generic message.
                 _logger.LogError(ex.Message, "An error occurred while deleting property with ID {Id}", id);
-                return false;
+                throw;
             }
         }
 
         public async Task<Property?> GetAsync(int id)
         {
-            return await _context.Properties.FindAsync(id);
-
+            return await _context.Properties.FindAsync(id) ??
+                throw new KeyNotFoundException($"Property with ID {id} not found");
         }
 
         public async Task<List<Property>> GetAllAsync()

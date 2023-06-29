@@ -1,4 +1,5 @@
 ﻿@page "/users"
+@inherits UsersComponent
 <PageTitle>Users</PageTitle>
 <h3>Properties</h3>
 <div class="row">
@@ -14,11 +15,13 @@
                     <th>PhoneNumber</th>
                     <th>InitialPropertiesCost</th>
                     <th>CurrentPropertiesCost</th>
-                    <th>Action</th>
+                    <AuthorizeView>
+                        <th>Action</th>
+                    </AuthorizeView>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in _users)
+                @foreach (var user in Users)
                 {
                     <tr>
                         <td>@user.FirstName</td>
@@ -29,10 +32,12 @@
                         <td>@user.PhoneNumber</td>
                         <td>@user.InitialPropertyCost</td>
                         <td>@user.CurrentPropertyCost</td>
-                        <td>
-                            <a href="/user/update/@user.Id" class="btn btn-outline-dark">Edit</a>
-                            <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(user)">Delete</button>
-                        </td>
+                        <AuthorizeView>
+                            <td>
+                                <a href="/user/update/@user.Id" class="btn btn-outline-dark">Edit</a>
+                                <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(user)">Delete</button>
+                            </td>
+                        </AuthorizeView>
                     </tr>
                 }
             </tbody>

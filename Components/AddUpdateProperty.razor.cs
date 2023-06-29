@@ -8,47 +8,58 @@ using Microsoft.JSInterop;
 
 namespace FirstProject.Components
 {
-    public partial class AddUpdateProperty
+    public class AddUpdatePropertyComponent : ComponentBase
     {
-        private string _title = "Add Property";
-        private string _message = string.Empty;
-        private List<User> _users = new();
-        Property _property = new();
         [Inject]
         private ICRUDService<Property> PropertyService { get; set; } = null!;
         [Inject]
         private NavigationManager NavigationManager { get; set; } = null!;
         [Inject]
         private CustomUserManager UserManager { get; set; } = null!;
+        [Inject]
+        private IJSRuntime JSRuntime { get; set; } = null!;
+        protected string Title = "Add Property";
+        protected string Message = string.Empty;
+        protected List<User> Users { get; private set; } = new();
+        protected Property Property { get; private set; } = new();
         [Parameter]
         public int Id { get; set; }
 
-        private async Task SaveAsync()
+        protected async Task SaveAsync()
         {
-            if (await PropertyService.AddUpdateAsync(_property))
+            try
             {
+                await PropertyService.AddUpdateAsync(Property);
                 if (Id > 0)
                 {
-                    _message = "Property updated successfully";
+                    Message = "Property updated successfully";
                     NavigationManager.NavigateTo("/");
                 }
                 else
-                    _message = "Property added successfully";
-                _property = new();
+                    Message = "Property added successfully";
+                Property = new();
             }
-            else
+            catch
             {
-                _message = "Failed to add/update property";
+                Message = "Failed to add/update property";
             }
         }
         protected override async Task OnInitializedAsync()
         {
-            if (Id > 0)
+            try
             {
-                _title = "Update Property";
-                _property = await PropertyService.GetAsync(Id);
+                if (Id > 0)
+                {
+                    Title = "Update Property";
+                    Property = await PropertyService.GetAsync(Id);
+                }
             }
-            _users = await UserManager.Users.ToListAsync();
+            catch
+            {
+                await JSRuntime.InvokeAsync<object>("alert", "Property does not exist.");
+                NavigationManager.NavigateTo("/property/add");
+            }
+            Users = await UserManager.Users.ToListAsync();
             await base.OnInitializedAsync();
         }
     }

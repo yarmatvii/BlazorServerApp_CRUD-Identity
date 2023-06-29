@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inherits PropertiesComponent
 <PageTitle>Properties</PageTitle>
 <h3>Properties</h3>
 <div class="row">
@@ -14,11 +15,13 @@
                     <th>PriceLoss</th>
                     <th>Owner</th>
                     <th>CurrentCost</th>
-                    <th>Action</th>
+                    <AuthorizeView>
+                        <th>Action</th>
+                    </AuthorizeView>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var property in _properties)
+                @foreach (var property in Properties)
                 {
                     <tr>
                         <td>@property.Name</td>
@@ -29,10 +32,12 @@
                         <td>@property.PriceLoss</td>
                         <td>@property.Owner.UserName</td>
                         <td>@property.CurrentCost</td>
-                        <td>
-                            <a href="/property/update/@property.Id" class="btn btn-outline-dark">Edit</a>
-                            <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(property)">Delete</button>
-                        </td>
+                        <AuthorizeView>
+                            <td>
+                                <a href="/property/update/@property.Id" class="btn btn-outline-dark">Edit</a>
+                                <button class="btn btn-outline-danger" @onclick="async () => await DeleteAsync(property)">Delete</button>
+                            </td>
+                        </AuthorizeView>
                     </tr>
                 }
             </tbody>
