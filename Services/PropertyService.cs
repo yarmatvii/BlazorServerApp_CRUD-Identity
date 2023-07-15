@@ -20,14 +20,14 @@ namespace FirstProject.Services
             {
                 if (property.Id == 0)
                 {
-                    await _context.Properties.AddAsync(property);
+                    _ = await _context.Properties.AddAsync(property);
                 }
                 else
                 {
-                    await GetAsync(property.Id);
-                    _context.Properties.Update(property);
+                    _ = await GetAsync(property.Id);
+                    _ = _context.Properties.Update(property);
                 }
-                await _context.SaveChangesAsync();
+                _ = await _context.SaveChangesAsync();
                 return property;
             }
             catch (Exception ex)
@@ -41,9 +41,9 @@ namespace FirstProject.Services
         {
             try
             {
-                var property = await GetAsync(id);
-                _context.Properties.Remove(property);
-                await _context.SaveChangesAsync();
+                Property? property = await GetAsync(id);
+                _ = _context.Properties.Remove(property);
+                _ = await _context.SaveChangesAsync();
                 return property;
             }
             catch (KeyNotFoundException ex)

@@ -2,7 +2,6 @@
 using FirstProject.Models;
 using FirstProject.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
@@ -29,14 +28,17 @@ namespace FirstProject.Components
         {
             try
             {
-                await _propertyService.AddUpdateAsync(Property);
+                _ = await _propertyService.AddUpdateAsync(Property);
                 if (Id > 0)
                 {
                     Message = "Property updated successfully";
                     _navigationManager.NavigateTo("/");
                 }
                 else
+                {
                     Message = "Property added successfully";
+                }
+
                 Property = new();
             }
             catch
@@ -56,7 +58,7 @@ namespace FirstProject.Components
             }
             catch
             {
-                await _jsRuntime.InvokeAsync<object>("alert", "Property does not exist.");
+                _ = await _jsRuntime.InvokeAsync<object>("alert", "Property does not exist.");
                 _navigationManager.NavigateTo("/property/add");
             }
 

@@ -1,6 +1,4 @@
-﻿using FirstProject.Models;
-
-namespace FirstProject.Services
+﻿namespace FirstProject.Services
 {
     public interface ICRUDService<T>
     {

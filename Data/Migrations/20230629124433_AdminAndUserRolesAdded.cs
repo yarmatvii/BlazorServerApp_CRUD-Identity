@@ -10,15 +10,15 @@ namespace FirstProject.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("INSERT INTO AspNetRoles (Id, Name, NormalizedName) VALUES ('1', 'Admin', 'ADMIN')");
-            migrationBuilder.Sql("INSERT INTO AspNetRoles (Id, Name, NormalizedName) VALUES ('2', 'User', 'USER')");
+            _ = migrationBuilder.Sql("INSERT INTO AspNetRoles (Id, Name, NormalizedName) VALUES ('1', 'Admin', 'ADMIN')");
+            _ = migrationBuilder.Sql("INSERT INTO AspNetRoles (Id, Name, NormalizedName) VALUES ('2', 'User', 'USER')");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DELETE FROM AspNetRoles WHERE Id = '1'");
-            migrationBuilder.Sql("DELETE FROM AspNetRoles WHERE Id = '2'");
+            _ = migrationBuilder.Sql("DELETE FROM AspNetRoles WHERE Id = '1'");
+            _ = migrationBuilder.Sql("DELETE FROM AspNetRoles WHERE Id = '2'");
         }
     }
 }

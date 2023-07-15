@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 
 namespace FirstProject.Models
@@ -8,11 +7,11 @@ namespace FirstProject.Models
     {
         public string? Address { get; set; }
         [Required]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
         [Required]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
         public float InitialPropertyCost => Properties?.Sum(p => p.InitialCost) ?? 0f;
         public float CurrentPropertyCost => Properties?.Sum(p => p.CurrentCost) ?? 0f;
-        public List<Property>? Properties { get; set; }
+        public List<Property> Properties { get; set; } = new List<Property>();
     }
 }

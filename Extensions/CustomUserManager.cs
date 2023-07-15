@@ -21,19 +21,10 @@ namespace FirstProject.Extensions
         {
             try
             {
-                IdentityResult result;
-                // Perform any additional operations before calling the base CreateAsync, if needed.
                 user.NormalizedEmail = NormalizeEmail(user.Email);
                 user.NormalizedUserName = NormalizeName(user.UserName);
-                if (Users.FirstOrDefault(x => x.Id == user.Id) == null)
-                {
-                    result = await base.CreateAsync(user);
-                }
-                else
-                {
-                    result = await base.UpdateAsync(user);
-                }
-                return result;
+
+                return Users.FirstOrDefault(x => x.Id == user.Id) == null ? await base.CreateAsync(user) : await base.UpdateAsync(user);
             }
             catch (Exception ex)
             {

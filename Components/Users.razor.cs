@@ -1,12 +1,10 @@
 ﻿using FirstProject.Extensions;
 using FirstProject.Models;
-using FirstProject.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
-using System.Data;
 using System.Security.Claims;
 
 namespace FirstProject.Components
@@ -21,8 +19,8 @@ namespace FirstProject.Components
         private CustomUserManager _userManager { get; set; } = null!;
         [Inject]
         private AuthenticationStateProvider _authenticationStateProvider { get; set; } = null!;
-        protected string userId;
-        protected Dictionary<string, string> _userRoles = new Dictionary<string, string>();
+        protected string? userId;
+        protected Dictionary<string, string> _userRoles = new();
         protected List<User> Users { get; private set; } = new();
         protected List<IdentityRole> Roles { get; private set; } = new();
 
@@ -33,21 +31,21 @@ namespace FirstProject.Components
             {
                 try
                 {
-                    await _userManager.DeleteAsync(user);
+                    _ = await _userManager.DeleteAsync(user);
                 }
                 catch (Exception ex)
                 {
                     await _jsRuntime.InvokeVoidAsync("alert", ex.Message);
                     return;
                 }
-                Users.Remove(user);
+                _ = Users.Remove(user);
             }
         }
 
         protected override async Task OnInitializedAsync()
         {
-            var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            var authUser = authenticationState.User;
+            AuthenticationState authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            ClaimsPrincipal authUser = authenticationState.User;
             userId = authUser.FindFirstValue(ClaimTypes.NameIdentifier);
             User authorizedUser;
 
@@ -66,9 +64,9 @@ namespace FirstProject.Components
                 }
             }
 
-            foreach (var user in Users)
+            foreach (User user in Users)
             {
-                var roles = await _userManager.GetRolesAsync(user);
+                IList<string> roles = await _userManager.GetRolesAsync(user);
                 _userRoles[user.Id] = roles.FirstOrDefault();
             }
 

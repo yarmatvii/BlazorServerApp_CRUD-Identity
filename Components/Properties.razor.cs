@@ -20,14 +20,14 @@ namespace FirstProject.Components
             {
                 try
                 {
-                    await _propertyService.DeleteAsync(property.Id);
+                    _ = await _propertyService.DeleteAsync(property.Id);
                 }
                 catch (Exception ex)
                 {
                     await _jsRuntime.InvokeVoidAsync("alert", ex.Message);
                     return;
                 }
-                Properties.Remove(property);
+                _ = Properties.Remove(property);
             }
         }
         protected override async Task OnInitializedAsync()

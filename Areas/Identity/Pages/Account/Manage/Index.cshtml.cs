@@ -2,16 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using FirstProject.Data;
 using FirstProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FirstProject.Areas.Identity.Pages.Account.Manage
 {
@@ -78,8 +75,8 @@ namespace FirstProject.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(User user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            string userName = await _userManager.GetUserNameAsync(user);
+            string phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             user = await _applicationDbContext.Users
                 .Include(u => u.Properties)
@@ -101,7 +98,7 @@ namespace FirstProject.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            User user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Unable to load _user with ID '{_userManager.GetUserId(User)}'.");
@@ -113,7 +110,7 @@ namespace FirstProject.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            User user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Unable to load _user with ID '{_userManager.GetUserId(User)}'.");
@@ -128,17 +125,17 @@ namespace FirstProject.Areas.Identity.Pages.Account.Manage
             user.Address = Input.Address;
             user.FirstName = Input.FirstName;
             user.LastName = Input.LastName;
-            var updateResult = await _userManager.UpdateAsync(user);
+            IdentityResult updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
             {
                 StatusMessage = "Unexpected error when trying to update profile.";
                 return RedirectToPage();
             }
 
-            var username = await _userManager.GetUserNameAsync(user);
+            string username = await _userManager.GetUserNameAsync(user);
             if (Input.Username != username)
             {
-                var setUsernameResult = await _userManager.SetUserNameAsync(user, Input.Username);
+                IdentityResult setUsernameResult = await _userManager.SetUserNameAsync(user, Input.Username);
                 if (!setUsernameResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set Username.";
@@ -146,10 +143,10 @@ namespace FirstProject.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            string phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+                IdentityResult setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";

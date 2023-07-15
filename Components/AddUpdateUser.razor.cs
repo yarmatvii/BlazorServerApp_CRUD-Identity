@@ -1,11 +1,8 @@
 ﻿using FirstProject.Extensions;
 using FirstProject.Models;
-using FirstProject.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.JSInterop;
-using System.Data;
 
 namespace FirstProject.Components
 {
@@ -18,7 +15,7 @@ namespace FirstProject.Components
         [Inject]
         private RoleManager<IdentityRole> _roleManager { get; set; } = null!;
         protected string Password = string.Empty;
-        protected string SelectedRoleName { get; set; }
+        protected string? SelectedRoleName { get; set; }
         protected bool IsUpdating;
         protected string Title = "Add User";
         protected string Message = string.Empty;
@@ -31,15 +28,15 @@ namespace FirstProject.Components
         {
             if (!await CheckIsUpdating() && Password.Trim() != string.Empty)
             {
-                await _userManager.AddPasswordAsync(User, Password);
+                _ = await _userManager.AddPasswordAsync(User, Password);
             }
             if (await CheckIsUpdating())
             {
-                await _userManager.RemoveFromRolesAsync(User, await _userManager.GetRolesAsync(User));
+                _ = await _userManager.RemoveFromRolesAsync(User, await _userManager.GetRolesAsync(User));
             }
 
-            var result = await _userManager.CreateAsync(User);
-            await _userManager.AddToRoleAsync(User, SelectedRoleName);
+            IdentityResult result = await _userManager.CreateAsync(User);
+            _ = await _userManager.AddToRoleAsync(User, SelectedRoleName);
             if (result.Succeeded)
             {
                 if (await CheckIsUpdating())
